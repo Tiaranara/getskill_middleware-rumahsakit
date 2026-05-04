@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Models\User;
+use Closure;
+use Illuminate\Http\Request;
+
+class EnsureDokter
+{
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        $user = User::current();
+
+        if (! $user) {
+            return redirect('/login');
+        }
+
+        if ($user->role !== 'dokter') {
+            abort(403, 'Akses hanya untuk dokter.');
+        }
+
+        return $next($request);
+    }
+}
